@@ -33,7 +33,6 @@ void draw() {
 
   background(255);
   fill(0);
-
   line(0, height/2, width, height/2);
   line(width/2, 0, width/2, height);
   pushMatrix();
@@ -41,6 +40,8 @@ void draw() {
   translate(width/2, height/2);
   plotHexadecagon(5);
   testPhenotype.drawPhenotype();
+  testPhenotype.recordIntersections();
+  testPhenotype.drawConnections();
 
   popMatrix();
 }

@@ -35,6 +35,11 @@ void plotHexadecagon(int dotSize) {
   line(x, y, polarX(0), polarY(0));
 }
 
+float distanceBetween(float xPos1, float yPos1, float xPos2, float yPos2){
+  float distance = sqrt(sq(xPos2 - xPos1) + sq(yPos2 - yPos1));
+  return distance;
+}
+
 float getHexSizeAtAngle(float angle){
   float scaledAngle = angle % hexadecagonalTriangleInnerAngle;
   float edgeAngle =  180 - (scaledAngle + hexadecagonalTriangleOuterAngle);

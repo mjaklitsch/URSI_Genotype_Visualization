@@ -1,9 +1,12 @@
 class Cell {
-
+  
+  ArrayList<Integer> downhillLinks = new ArrayList<Integer>(); // info flows from this cell to these cells
+  ArrayList<Integer> uphillLinks = new ArrayList<Integer>(); // info flows from these cells to this cell
+  
   Genotype genotype;
   float xPos = 0;
   float yPos = 0;
-  float radius = 0;
+  float diameter = 0;
 
   float xSpeed = 0;
   float ySpeed = 0;
@@ -34,7 +37,7 @@ class Cell {
 
 
     if (currentTick - genotype.growthDelay < genotype.growthDuration) {
-      radius += growthRate;
+      diameter += growthRate;
     }
   }
  int opacity = 85;
@@ -56,7 +59,7 @@ class Cell {
       fill(#4dff00, opacity);
       break;
     }
-    ellipse(xPos, yPos, radius, radius);
+    ellipse(xPos, yPos, diameter, diameter);
 
   }
 }
