@@ -1,11 +1,12 @@
 int hexadecagonRadius = 300;
-float hexadecagonalTriangleInnerAngle = 78.75; //see below
-//   center
+float hexadecagonalTriangleInnerAngle = 22.5;
+float hexadecagonalTriangleOuterAngle = 78.75; //see below
+//   center (Inner Angle)
 //     /\
 //    /  \
 //   /    \
 //  /______\
-//  ^ these ^ angles
+//  ^ these ^ angles (Outer Angles)
 
 
 float polarX(float angle) { // takes angle
@@ -21,7 +22,7 @@ void plotHexadecagon(int dotSize) {
   float lastY = 0;
   float x = 0;
   float y = 0;
-  for (float i = 0; i < 360; i += 22.5) {
+  for (float i = 0; i < 360; i += hexadecagonalTriangleInnerAngle) {
     lastX = x;
     lastY = y;
     x = polarX(i);
@@ -35,8 +36,8 @@ void plotHexadecagon(int dotSize) {
 }
 
 float getHexSizeAtAngle(float angle){
-  float scaledAngle = angle % 22.5;
-  float edgeAngle =  180 - (scaledAngle + hexadecagonalTriangleInnerAngle);
-  float hexSize = (hexadecagonRadius * sin(hexadecagonalTriangleInnerAngle)) / (sin(edgeAngle));
+  float scaledAngle = angle % hexadecagonalTriangleInnerAngle;
+  float edgeAngle =  180 - (scaledAngle + hexadecagonalTriangleOuterAngle);
+  float hexSize = (hexadecagonRadius * sin(hexadecagonalTriangleOuterAngle)) / (sin(edgeAngle));
   return hexSize;
 }

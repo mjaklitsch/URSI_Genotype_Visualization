@@ -37,23 +37,23 @@ class Cell {
       radius += growthRate;
     }
   }
-
+ int opacity = 85;
   void spawnCell() {
     switch(genotype.type) {
     case "N":
-      fill(#c904ff, 70);
+      fill(#c904ff, opacity);
       break;
     case "P":
-      fill(#f7ff00, 70);
+      fill(#f7ff00, opacity);
       break;
     case "R":
-      fill(#ff2600, 70);
+      fill(#ff2600, opacity);
       break;
     case "LM":
-      fill(#04e600, 70);
+      fill(#04e600, opacity);
       break;
     case "RM":
-      fill(#4dff00, 70);
+      fill(#4dff00, opacity);
       break;
     }
     ellipse(xPos, yPos, radius, radius);
