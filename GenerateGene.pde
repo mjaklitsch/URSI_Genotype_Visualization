@@ -1,68 +1,65 @@
-int minDelay;
-int maxDelay;
-int minSpeed;
-int maxSpeed;
-int minGrowthRate;
-int maxGrowthRate;
-int minDuration;
-int maxDuration;
-
-Genotype returnRandomNewGenotype() {
-  String type = "N";
-  int typeNumber = round(random(0, 4));
-  switch(typeNumber) {
-  case 0:
-    type = "N";
-    break;
-  case 1:
-    type = "P";
-    break;
-  case 2:
-    type = "R";
-    break;
-  case 3:
-    type = "LM";
-    break;
-  case 4:
-    type = "RM";
-    break;
-  }
- 
-  minDuration = 20;
-  maxDuration = 40;
-  minDelay = 0;
-  maxDelay = ticks - maxDuration;
-  minSpeed = 6;
-  maxSpeed = 12;
-  minGrowthRate = 3;
-  maxGrowthRate = 7;
-  int angle;
-  if(type == "LM"){
-    angle = int(random(180, 360));
-  } else if(type == "RM"){
-    angle = int(random(0, 180));
+Genotype returnRandomNewGenotype(String cellType) {
+  String type = "";
+  
+  if (cellType != "") {
+    type = cellType;
   } else {
-    angle = int(random(0, 360));
+    int typeNumber = round(random(0, 4));
+    switch(typeNumber) {
+    case 0:
+      type = "N";
+      break;
+    case 1:
+      type = "P";
+      break;
+    case 2:
+      type = "R";
+      break;
+    case 3:
+      type = "LM";
+      break;
+    case 4:
+      type = "RM";
+      break;
+    }
   }
+
+  float angle;
+  
+  if (type == "LM") {
+    angle = random(radians(90), radians(270));
+  } else if (type == "RM") {
+    angle = random(radians(-90), radians(90));
+    if(angle < 0){
+      angle+=(2*PI);
+    }
+  } else {
+    angle = random(radians(0), radians(360));
+  }
+  // these are defined in the main file
   int speed = int(random(minSpeed, maxSpeed));
   int movementDelay = int(random(minDelay, maxDelay));
   int movementDuration = int(random(minDuration, maxDuration));
   int growthDelay = int(random(movementDelay - 5, movementDelay + 5));
   int growthRate = int(random(minGrowthRate, maxGrowthRate));
   int growthDuration = int(random(minDuration, maxDuration));
-  
+
   Genotype newGenotype = new Genotype(type, angle, growthDelay, growthRate, growthDuration, speed, movementDelay, movementDuration);
   printGenotype(newGenotype);
   return newGenotype;
 }
 
-void printGenotype(Genotype genotype){
+void printGenotype(Genotype genotype) {
   println();
   print("Begin Genotype");
   println();
-  print("type: " + genotype.type);
+  print("type: " + genotype.cellType);
   println();
-  print("angle: " + genotype.angle);
+  if(degrees(genotype.theta) < 0){
+    print("angle: " + (degrees(genotype.theta) + 360));
+  } else {
+    print("angle: " + degrees(genotype.theta));
+  }
   println();
   print("growthDelay: " + genotype.growthDelay);
   println();

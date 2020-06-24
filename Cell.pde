@@ -7,13 +7,14 @@ class Cell {
   float xPos = 0;
   float yPos = 0;
   float diameter = 0;
+  float radius = 0;
 
   float xSpeed = 0;
   float ySpeed = 0;
   float growthRate = 0;
 
-  Cell() {
-    genotype = returnRandomNewGenotype();
+  Cell(String cellType) {
+    genotype = returnRandomNewGenotype(cellType);
   }
 
   void setCellSpeedAndGrowth() {
@@ -23,26 +24,28 @@ class Cell {
 
     if (currentTick > genotype.movementDelay) {
       float speed = (genotype.speed / actionSpread);
-      xSpeed = speed * sin(genotype.angle);
-      ySpeed = speed * cos(genotype.angle);
+      xSpeed = speed * cos(genotype.theta);
+      ySpeed = speed * sin(genotype.theta);
     }
   }
 
   void moveAndMorphCell() {
     if (currentTick - genotype.movementDelay < genotype.movementDuration) {
       xPos += xSpeed;
-      yPos += ySpeed;
+      yPos -= ySpeed;
     }
 
 
 
     if (currentTick - genotype.growthDelay < genotype.growthDuration) {
       diameter += growthRate;
+      radius = diameter/2;
     }
   }
+  
  int opacity = 85;
   void spawnCell() {
-    switch(genotype.type) {
+    switch(genotype.cellType) {
     case "N":
       fill(#c904ff, opacity);
       break;

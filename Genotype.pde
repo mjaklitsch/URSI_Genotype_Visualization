@@ -1,6 +1,6 @@
 class Genotype {
-  String type;
-  float angle;
+  String cellType;
+  float theta;
   float growthDelay;
   float growthRate;
   float growthDuration;
@@ -8,12 +8,12 @@ class Genotype {
   float movementDelay;
   float movementDuration;
 
-  Genotype(String tempType, float tempAngle, float tempGrowthDelay, 
+  Genotype(String tempCellType, float tempTheta, float tempGrowthDelay, 
     float tempGrowthRate, float tempGrowthDuration, float tempSpeed, 
     float tempMovementDelay, float tempMovementDuration) {
 
-    type = tempType;
-    angle = tempAngle;
+    cellType = tempCellType;
+    theta = tempTheta;
     growthDelay = tempGrowthDelay;
     growthRate = tempGrowthRate;
     growthDuration = tempGrowthDuration;

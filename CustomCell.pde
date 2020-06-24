@@ -3,6 +3,7 @@ class CustomCell {
   Genotype genotype;
   float xPos = 0;
   float yPos = 0;
+  float diameter = 0;
   float radius = 0;
 
   float xSpeed = 0;
@@ -20,8 +21,8 @@ class CustomCell {
 
     if (currentTick > genotype.movementDelay) {
       float speed = (genotype.speed);
-      xSpeed = speed * sin(genotype.angle);
-      ySpeed = speed * cos(genotype.angle);
+      xSpeed = speed * cos(genotype.theta);
+      ySpeed = speed * sin(genotype.theta);
     }
   }
 
@@ -32,13 +33,14 @@ class CustomCell {
     }
 
     if (currentTick - genotype.growthDelay < genotype.growthDuration) {
-      radius += growthRate;
+      diameter += growthRate;
+      radius = diameter/2;
     }
   }
 
   void spawnCell() {
     noStroke();
-    switch(genotype.type) {
+    switch(genotype.cellType) {
     case "N":
       fill(#c904ff);
       break;
