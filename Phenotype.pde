@@ -3,20 +3,18 @@ class Phenotype {
   Cell[] cellArray;
   int numberOfCells;
 
-  Phenotype(int tempNumberOfCells, int neurons, int photoSensors, int irSensors, int leftMotors, int rightMotors) {
-    int specifiedCellSum = (neurons + photoSensors + irSensors + leftMotors + rightMotors);
-    numberOfCells = tempNumberOfCells;
+  float partCost; // later implementation
 
-    if (tempNumberOfCells < specifiedCellSum) {
-      numberOfCells = specifiedCellSum;
-      print("The Phenotype class always builds specified cells even if it exceeds the specified cell limit, as a result " + 
-        specifiedCellSum + " cells were added instead of the desired " + tempNumberOfCells);
-      println();
-    } else if (tempNumberOfCells > specifiedCellSum && !(specifiedCellSum <= 0)) {
-      print("The Phenotype class always builds up to the specified cell limit, as a result " + 
-        (tempNumberOfCells - specifiedCellSum)  + " cells were added in addition to your specified " + specifiedCellSum);
-      println();
-    }
+  Phenotype(int minNeurons, int maxNeurons, int minPhotoSensors, int maxPhotoSensors, 
+    int minIRSensors, int maxIRSensors, int minLeftMotors, int maxLeftMotors, int minRightMotors, int maxRightMotors) {
+
+    int neurons = int(random(minNeurons, maxNeurons));
+    int photoSensors = int(random(minPhotoSensors, maxPhotoSensors));
+    int irSensors = int(random(minIRSensors, maxIRSensors));
+    int leftMotors = int(random(minLeftMotors, maxLeftMotors));
+    int rightMotors = int(random(minRightMotors, maxRightMotors));
+
+    numberOfCells = neurons + photoSensors + irSensors + leftMotors + rightMotors;
 
     cellArray = new Cell[numberOfCells];
 
@@ -51,11 +49,6 @@ class Phenotype {
       cellArray[i] = nextCell;
     }
     arrayIndex += rightMotors;
-
-    for (int i = arrayIndex; i < numberOfCells; i++) {
-      Cell nextCell = new Cell("");
-      cellArray[i] = nextCell;
-    }
   }
 
   void drawPhenotype() {
@@ -68,38 +61,43 @@ class Phenotype {
 
   void drawConnections() {
     for (int i = 0; i < numberOfCells; i++) {
-      int uplinks = cellArray[i].uphillLinks.size();
-      for (int j = 0; j < uplinks; j++) {
-        Cell theCellBeingLinkedTo = cellArray[cellArray[i].uphillLinks.get(j)];
-
-        float xPos1 = cellArray[i].xPos;
-        float yPos1 = cellArray[i].yPos;
-        float xPos2 = theCellBeingLinkedTo.xPos;
-        float yPos2 = theCellBeingLinkedTo.yPos;
-
-        arrow(int(xPos2), int(yPos2), int(xPos1), int(yPos1));
-      }
+      cellArray[i].updateConnections();
+      cellArray[i].drawConnections();
     }
   }
 
   void recordIntersections() {
     for (int i = 0; i < numberOfCells; i++) {
       for (int j = i+1; j < numberOfCells; j++) {
-        if (!cellArray[i].downhillLinks.contains(j) && !cellArray[i].uphillLinks.contains(j)) {
-          if (((cellArray[i].radius + cellArray[j].radius) > 
-            distanceBetween(cellArray[i].xPos, cellArray[i].yPos, 
-            cellArray[j].xPos, cellArray[j].yPos)) && 
-            (cellArray[i].diameter > 0) && 
-            (cellArray[j].diameter > 0)) {
-            if (cellArray[i].diameter > cellArray[j].diameter) { // info flows from i to j
-              if ((cellArray[j].genotype.cellType != "R") && (cellArray[j].genotype.cellType != "P")) { // information cannot flow to sensors
-                cellArray[i].downhillLinks.add(j);
-                cellArray[j].uphillLinks.add(i);
+
+        Cell celli = cellArray[i];
+        Cell cellj = cellArray[j];
+
+        float ixPos = celli.xPos;
+        float iyPos = celli.yPos;
+        float jxPos = cellj.xPos;
+        float jyPos = cellj.yPos;
+
+
+        // constant variables added for ease of readability
+
+        if (!celli.hasConnection(i, j)) { // if no connection has been recorded yet
+          if (((celli.radius + cellj.radius) > distanceBetween(ixPos, iyPos, jxPos, jyPos)) && 
+            (celli.diameter > 0) && 
+            (cellj.diameter > 0)) { // if the two have spawned and are overlapping
+            if (celli.diameter > cellj.diameter) { // if i is bigger than j, info flows from i to j
+              if ((cellj.genotype.cellType != "R") && (cellj.genotype.cellType != "P")) { // information cannot flow to sensors
+                float connectionWeight = calculateConnectionWeight(celli, cellj);
+                Connection newConnection = new Connection(i, celli, j, cellj, connectionWeight);
+                celli.downhillConnections.add(newConnection);
+                cellj.uphillConnections.add(newConnection);
               }
-            } else if (cellArray[i].diameter < cellArray[j].diameter) { // info flows from j to i
-              if ((cellArray[i].genotype.cellType != "R") && (cellArray[i].genotype.cellType != "P")) { // information cannot flow to sensors
-                cellArray[j].downhillLinks.add(i);
-                cellArray[i].uphillLinks.add(j);
+            } else if (celli.diameter < cellArray[j].diameter) { // if j is bigger than i,  info flows from j to i
+              if ((celli.genotype.cellType != "R") && (celli.genotype.cellType != "P")) { // information cannot flow to sensors
+                float connectionWeight = calculateConnectionWeight(cellj, celli);
+                Connection newConnection = new Connection(j, cellj, i, celli, connectionWeight);
+                cellj.downhillConnections.add(newConnection);
+                celli.uphillConnections.add(newConnection);
               }
             }
           }

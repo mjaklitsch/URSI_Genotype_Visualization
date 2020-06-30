@@ -24,17 +24,17 @@ Genotype returnRandomNewGenotype(String cellType) {
     }
   }
 
-  float angle;
+  float theta;
   
   if (type == "LM") {
-    angle = random(radians(90), radians(270));
+    theta = random((PI / 2), 3 * (PI / 2));
   } else if (type == "RM") {
-    angle = random(radians(-90), radians(90));
-    if(angle < 0){
-      angle+=(2*PI);
+    theta = random(-(PI / 2), (PI / 2));
+    if(theta < 0){
+      theta+=(2*PI);
     }
   } else {
-    angle = random(radians(0), radians(360));
+    theta = random(0, (2*PI));
   }
   // these are defined in the main file
   int speed = int(random(minSpeed, maxSpeed));
@@ -44,7 +44,7 @@ Genotype returnRandomNewGenotype(String cellType) {
   int growthRate = int(random(minGrowthRate, maxGrowthRate));
   int growthDuration = int(random(minDuration, maxDuration));
 
-  Genotype newGenotype = new Genotype(type, angle, growthDelay, growthRate, growthDuration, speed, movementDelay, movementDuration);
+  Genotype newGenotype = new Genotype(type, theta, growthDelay, growthRate, growthDuration, speed, movementDelay, movementDuration);
   printGenotype(newGenotype);
   return newGenotype;
 }

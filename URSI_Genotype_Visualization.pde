@@ -5,14 +5,19 @@ int currentTick = 0;
 int simTime = ticks / ticksPerSecond; // time in seconds
 int actionSpread = frames / ticksPerSecond; 
 
-int totalCells = 8;
+//int totalCells = 8;
 
-// At least this amount of the cell type will be spawned, TODO: needs to be changed to exactly this number spawn(maybe?)
-int requiredNeurons = 0;
-int requiredPhotosensors = 0;
-int requiredIRSensors = 0;
-int requiredLeftMotors = 0;
-int requiredRightMotors = 0;
+int minNeurons = 1;
+int minPhotosensors = 1;
+int minIRSensors = 1;
+int minLeftMotors = 1;
+int minRightMotors = 1;
+
+int maxNeurons = 6;
+int maxPhotosensors = 6;
+int maxIRSensors = 6;
+int maxLeftMotors = 1;
+int maxRightMotors = 1;
 
 int minDuration = 20;
 int maxDuration = 40;
@@ -32,7 +37,8 @@ void setup() {
   size(1000, 1000);
   background(255);
   frameRate(frames);
-  testPhenotype = new Phenotype(totalCells, requiredNeurons, requiredPhotosensors, requiredIRSensors, requiredLeftMotors, requiredRightMotors);
+  testPhenotype = new Phenotype(minNeurons, maxNeurons, minPhotosensors, maxPhotosensors, 
+    minIRSensors, maxIRSensors, minLeftMotors, maxLeftMotors, minRightMotors, maxRightMotors);
   testSensorArray = new SensorArray();
 
   line(0, height/2, width, height/2);
@@ -75,6 +81,6 @@ void draw() {
   testSensorArray.drawSensors();
   testSensorArray.recordIntersections(testPhenotype);
   testSensorArray.drawIntersections(testPhenotype);
-  
+
   popMatrix();
 }
