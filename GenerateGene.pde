@@ -50,9 +50,7 @@ Genotype returnRandomNewGenotype(String cellType) {
 }
 
 void printGenotype(Genotype genotype) {
-  println();
-  print("Begin Genotype");
-  println();
+  println("=============================");
   print("type: " + genotype.cellType);
   println();
   if(degrees(genotype.theta) < 0){
@@ -72,7 +70,5 @@ void printGenotype(Genotype genotype) {
   print("movementDelay: " + genotype.movementDelay);
   println();
   print("movementDuration: " + genotype.movementDuration);
-  println();
-  print("Done with Genotype");
   println();
 }

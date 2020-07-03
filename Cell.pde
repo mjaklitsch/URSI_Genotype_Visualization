@@ -1,7 +1,9 @@
 class Cell {
+  float checksum = random(0, 1000);
 
   ArrayList<Connection> downhillConnections = new ArrayList<Connection>(); // info flows from this cell to these cells
   ArrayList<Connection> uphillConnections = new ArrayList<Connection>(); // info flows from these cells to this cell
+  ArrayList<Connection> neuronalConnections = new ArrayList<Connection>();
 
   Genotype genotype;
   float xPos = 0;
@@ -13,8 +15,35 @@ class Cell {
   float ySpeed = 0;
   float growthRate = 0;
 
+  boolean doneMoving = false;
+  boolean doneGrowing = false;
+
   Cell(String cellType) {
     genotype = returnRandomNewGenotype(cellType);
+  }
+
+  boolean isMotor() {
+    if (genotype.cellType == "LM" || genotype.cellType == "RM") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  boolean isSensor() {
+    if (genotype.cellType == "R" || genotype.cellType == "P") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  boolean isNeuron() {
+    if (genotype.cellType == "N") {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   boolean hasConnection(int cell1Index, int cell2Index) {
@@ -23,27 +52,49 @@ class Cell {
       if (uphillConnections.get(i).cellFromIndex == cell1Index || uphillConnections.get(i).cellFromIndex == cell2Index) {
         return true;
       }
+      uplinks = uphillConnections.size();// recalculate as items will be added to list dynamically
     }
     int downlinks = downhillConnections.size();
     for (int i = 0; i < downlinks; i++) {
       if (downhillConnections.get(i).cellToIndex == cell1Index || downhillConnections.get(i).cellToIndex == cell2Index) {
         return true;
       }
+      downlinks = downhillConnections.size();// recalculate as items will be added to list dynamically
+    }
+    int neurolinks = neuronalConnections.size(); 
+    for (int i = neurolinks - 1; i >= 0; i--) { // we need to decrement here as items will be removed from this list dynamically
+      if (neuronalConnections.get(i).cellToIndex == cell1Index || 
+        neuronalConnections.get(i).cellToIndex == cell2Index   ||
+        neuronalConnections.get(i).cellFromIndex == cell1Index || 
+        neuronalConnections.get(i).cellFromIndex == cell2Index) {
+        return true;
+      }
     }
     return false;
   }
 
-  void updateConnections() {
+  void updateAllConnectionPositions() {
     int uplinks = uphillConnections.size();
     for (int i = 0; i < uplinks; i++) {
-      uphillConnections.get(i).updateConnection();
+      uphillConnections.get(i).updateThisConnectionPosition();
+      uplinks = uphillConnections.size(); // recalculate as items will be added to list dynamically
+    }
+    int neurolinks = neuronalConnections.size(); 
+    for (int i = neurolinks - 1; i >= 0; i--) { // we need to decrement here as items will be removed from this list dynamically
+      neuronalConnections.get(i).updateThisConnectionPosition();
     }
   }
 
-  void drawConnections() {
+  void drawAllConnections() {
     int uplinks = uphillConnections.size();
-    for (int i = 0; i < uplinks; i++) {
-      uphillConnections.get(i).drawConnection();
+    for (int i = 0; i < uplinks; i++) { // uphillConnections contains all connections, downhill is only 
+      // for data recording so we only need to draw one arraylist
+      uphillConnections.get(i).drawThisConnection();
+      uplinks = uphillConnections.size();// recalculate as items will be added to list dynamically
+    }
+    int neurolinks = neuronalConnections.size(); 
+    for (int i = neurolinks - 1; i >= 0; i--) { // we need to decrement here as items will be removed from this list dynamically
+      neuronalConnections.get(i).drawThisConnection();
     }
   }
 
@@ -60,14 +111,18 @@ class Cell {
   }
 
   void moveAndMorphCell() {
-    if (currentTick - genotype.movementDelay < genotype.movementDuration) {
+    if (!doneMoving && (currentTick - genotype.movementDelay < genotype.movementDuration)) {
       xPos += xSpeed;
       yPos -= ySpeed;
+    } else {
+      doneMoving = true;
     }
 
-    if (currentTick - genotype.growthDelay < genotype.growthDuration) {
+    if (!doneGrowing && (currentTick - genotype.growthDelay < genotype.growthDuration)) {
       diameter += growthRate;
       radius = diameter/2;
+    } else {
+      doneGrowing = true;
     }
   }
 

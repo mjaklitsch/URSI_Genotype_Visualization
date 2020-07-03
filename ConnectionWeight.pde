@@ -1,8 +1,34 @@
 float calculateConnectionWeight(Cell cellFrom, Cell cellTo) {
-  float weight = cellFrom.diameter / cellTo.diameter;
+  float weight = getConnectionWeight(cellFrom, cellTo);
+  int direction = getConnectionDirection(cellFrom, cellTo);
 
 
-  return getConnectionDirection(cellFrom, cellTo) * weight;
+  return direction * weight;
+}
+
+float getConnectionWeight(Cell cellFrom, Cell cellTo) {
+  float weight;
+  if (cellTo.isSensor()) {
+    if (cellTo.diameter < cellFrom.diameter) {
+      weight = cellTo.diameter / cellFrom.diameter;
+    } else {
+      weight = cellFrom.diameter / cellTo.diameter;
+    }
+  } else if (cellFrom.isSensor()) {
+    if (cellFrom.diameter < cellTo.diameter) {
+      weight = cellFrom.diameter / cellTo.diameter;
+    } else {
+      weight = cellTo.diameter / cellFrom.diameter;
+    }
+  } else {
+    if (cellFrom.diameter < cellTo.diameter) {
+      weight = cellFrom.diameter / cellTo.diameter;
+    } else {
+      weight = cellTo.diameter / cellFrom.diameter;
+    }
+  }
+
+  return weight;
 }
 
 int getConnectionDirection(Cell cellFrom, Cell cellTo) {
@@ -40,12 +66,11 @@ int getConnectionDirection(Cell cellFrom, Cell cellTo) {
 
   if (inRange(toTheta, rangeCounterClockwise) || inRange(toTheta, rangeCounterClockwise2)) {
     return -1;
-  } else if (inRange(toTheta, rangeClockwise) || inRange(toTheta, rangeClockwise2)){
+  } else if (inRange(toTheta, rangeClockwise) || inRange(toTheta, rangeClockwise2)) {
     return 1;
   } else {
     return 0; // should never return
   }
-  
 }
 
 boolean inRange(float x, float[] range) {
@@ -55,3 +80,15 @@ boolean inRange(float x, float[] range) {
     return false;
   }
 }
+
+//boolean isConnectionDirectionFrom(Cell cell1, /*To*/ Cell cell2){ 
+
+//  if(cell1.genotype.cellType == "P" || cell1.genotype.cellType == "R"){ //|| cell1.genotype.cellType == "LM" || cell1.genotype.cellType == "RM"){
+//    if(cell2.isNeuron() || cell2.genotype.cellType == "LM" || cell2.genotype.cellType == "RM"){
+//      return true;
+//    }
+//  } else if(cell1.isNeuron()){
+
+//  }
+
+//}

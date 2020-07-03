@@ -1,6 +1,6 @@
 class SensorArray {
 
-  SensorDot[] sensorArray = new SensorDot[16];
+  SensorDot[] sensorDotArray = new SensorDot[16];
 
   SensorArray() {
     // nothing needed here yet, this class exists for organization
@@ -9,11 +9,11 @@ class SensorArray {
   void drawIntersections(Phenotype phenotype) {
 
     for (int i = 0; i < 16; i++) {
-      for (int j = 0; j < sensorArray[i].connections.size(); j++) {
-        int cellIndex = sensorArray[i].connections.get(j);
+      for (int j = 0; j < sensorDotArray[i].connections.size(); j++) {
+        int cellIndex = sensorDotArray[i].connections.get(j);
         stroke(200, 50, 0);
         strokeWeight(3);
-        line(sensorArray[i].xPos, sensorArray[i].yPos, phenotype.cellArray[cellIndex].xPos, phenotype.cellArray[cellIndex].yPos);
+        line(sensorDotArray[i].xPos, sensorDotArray[i].yPos, phenotype.cellArray[cellIndex].xPos, phenotype.cellArray[cellIndex].yPos);
         stroke(0);
         strokeWeight(1);
       }
@@ -32,8 +32,8 @@ class SensorArray {
           angle = tempAngle;
         }
         int sensorIndex = getIndexOfClosestSensorDotToAngle(angle);
-        if (!sensorArray[sensorIndex].connections.contains(i)) {
-          sensorArray[sensorIndex].connections.add(i);
+        if (!sensorDotArray[sensorIndex].connections.contains(i)) {
+          sensorDotArray[sensorIndex].connections.add(i);
         }
       }
     }
@@ -53,7 +53,7 @@ class SensorArray {
       int sensorArrayIndex = int(i/hexadecagonalTriangleInnerAngle);
       fill(0);
       text(sensorArrayIndex, x, y);
-      sensorArray[sensorArrayIndex].drawSensorDot();
+      sensorDotArray[sensorArrayIndex].drawSensorDot();
 
       if (i > 0) {
         line(lastX, lastY, x, y);
@@ -76,8 +76,8 @@ class SensorArray {
       int sensorArrayIndex = int(i/hexadecagonalTriangleInnerAngle);
       fill(0);
       text(sensorArrayIndex, x, y);
-      sensorArray[sensorArrayIndex] = new SensorDot(x, y, dotSize);
-      sensorArray[sensorArrayIndex].drawSensorDot();
+      sensorDotArray[sensorArrayIndex] = new SensorDot(x, y, dotSize);
+      sensorDotArray[sensorArrayIndex].drawSensorDot();
 
       if (i > 0) {
         line(lastX, lastY, x, y);
