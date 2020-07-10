@@ -51,14 +51,17 @@ class Phenotype {
     arrayIndex += rightMotors;
   }
 
-  void printPhenotype() {
+  void addConnection(int i, int j, Cell celli, Cell cellj) {
+    Connection newConnection = new Connection(i, j, celli, cellj);
+    celli.cellConnections.add(newConnection);
+    cellj.cellConnections.add(newConnection);
   }
 
   void drawPhenotype() {
     for (int i = 0; i < numberOfCells; i ++) {
       cellArray[i].moveAndMorphCell();
       cellArray[i].setCellSpeedAndGrowth();
-      cellArray[i].spawnCell();
+      cellArray[i].drawCell();
     }
   }
 
@@ -91,48 +94,32 @@ class Phenotype {
           if (((celli.radius + cellj.radius) > distanceBetween(ixPos, iyPos, jxPos, jyPos)) && 
             (celli.diameter > 0) && 
             (cellj.diameter > 0)) { // if the two have spawned and are overlapping
-            if (celli.isNeuron() || cellj.isNeuron()) { // if either cell is a neuron we need to...
-              // ...wait until the neuron is done growing to calculate connection weight
-              Connection newConnection = new Connection(i, celli, j, cellj, 0, true);
-              celli.neuronalConnections.add(newConnection);
-              cellj.neuronalConnections.add(newConnection);
-              //
-            } else if (celli.isSensor() && cellj.isMotor()) { // if a sensor(i) is connecting to a motor(j)
-              // info flows from sensor to motor regardless of their size
-              float connectionWeight = calculateConnectionWeight(celli, cellj);
-              Connection newConnection = new Connection(i, celli, j, cellj, connectionWeight, false);
-
-              celli.downhillConnections.add(newConnection);
-              cellj.uphillConnections.add(newConnection);
-              //
-            } else if (cellj.isSensor() && celli.isMotor()) { // if a sensor(j) is connecting to a motor(i)
-              // info flows from sensor to motor regardless of their size
-              float connectionWeight = calculateConnectionWeight(cellj, celli);
-              Connection newConnection = new Connection(j, cellj, i, celli, connectionWeight, false);
-
-              cellj.downhillConnections.add(newConnection);
-              celli.uphillConnections.add(newConnection);
-              //
-            } else if(celli.isMotor() && cellj.isMotor()){
-              // do nothing
-            } else if ((celli.diameter > cellj.diameter) && !cellj.isSensor()) { // if i is bigger than j, info flows from i to j
-              // information cannot flow to sensors
-              //
-              float connectionWeight = calculateConnectionWeight(celli, cellj);
-              Connection newConnection = new Connection(i, celli, j, cellj, connectionWeight, false);
-
-              celli.downhillConnections.add(newConnection);
-              cellj.uphillConnections.add(newConnection);
-              //
-            } else if ((celli.diameter < cellj.diameter) && !celli.isSensor()) { // if j is bigger than i,  info flows from j to i
-              // information cannot flow to sensors
-              //
-              float connectionWeight = calculateConnectionWeight(cellj, celli);
-              Connection newConnection = new Connection(j, cellj, i, celli, connectionWeight, false);
-
-              cellj.downhillConnections.add(newConnection);
-              celli.uphillConnections.add(newConnection);
-              //
+            //
+            // there are more concise and efficient ways of writing this but I have chosen this for ease of readability
+            if (celli.isNeuron()) { 
+              if (cellj.isNeuron()) { // connect
+                addConnection(i, j, celli, cellj);
+              } else if (cellj.isMotor()) { // connect
+                addConnection(i, j, celli, cellj);
+              } else if (cellj.isSensor()) { // connect
+                addConnection(i, j, celli, cellj);
+              }
+            } else if (celli.isMotor()) {
+              if (cellj.isNeuron()) { // connect
+                addConnection(i, j, celli, cellj);
+              } else if (cellj.isMotor()) { // don't connect
+                // do nothing
+              } else if (cellj.isSensor()) { // connect
+                addConnection(i, j, celli, cellj);
+              }
+            } else if (celli.isSensor()) {
+              if (cellj.isNeuron()) { // connect
+                addConnection(i, j, celli, cellj);
+              } else if (cellj.isMotor()) { // connect
+                addConnection(i, j, celli, cellj);
+              } else if (cellj.isSensor()) { // don't connect
+                // do nothing
+              }
             }
           }
         }
@@ -140,3 +127,50 @@ class Phenotype {
     }
   }
 }
+
+
+
+
+//if (celli.isNeuron() || cellj.isNeuron()) { // if either cell is a neuron we need to...
+//  // ...wait until the neuron is done growing to calculate connection weight
+//  Connection newConnection = new Connection(i, celli, j, cellj, 0, true);
+//  celli.neuronalConnections.add(newConnection);
+//  cellj.neuronalConnections.add(newConnection);
+//  //
+//} else if (celli.isSensor() && cellj.isMotor()) { // if a sensor(i) is connecting to a motor(j)
+//  // info flows from sensor to motor regardless of their size
+//  float connectionWeight = calculateConnectionWeight(celli, cellj);
+//  Connection newConnection = new Connection(i, celli, j, cellj, connectionWeight, false);
+
+//  celli.downhillConnections.add(newConnection);
+//  cellj.uphillConnections.add(newConnection);
+//  //
+//} else if (cellj.isSensor() && celli.isMotor()) { // if a sensor(j) is connecting to a motor(i)
+//  // info flows from sensor to motor regardless of their size
+//  float connectionWeight = calculateConnectionWeight(cellj, celli);
+//  Connection newConnection = new Connection(j, cellj, i, celli, connectionWeight, false);
+
+//  cellj.downhillConnections.add(newConnection);
+//  celli.uphillConnections.add(newConnection);
+//  //
+//} else if(celli.isMotor() && cellj.isMotor()){
+//  // do nothing
+//} else if ((celli.diameter > cellj.diameter) && !cellj.isSensor()) { // if i is bigger than j, info flows from i to j
+//  // information cannot flow to sensors
+//  //
+//  float connectionWeight = calculateConnectionWeight(celli, cellj);
+//  Connection newConnection = new Connection(i, celli, j, cellj, connectionWeight, false);
+
+//  celli.downhillConnections.add(newConnection);
+//  cellj.uphillConnections.add(newConnection);
+//  //
+//} else if ((celli.diameter < cellj.diameter) && !celli.isSensor()) { // if j is bigger than i,  info flows from j to i
+//  // information cannot flow to sensors
+//  //
+//  float connectionWeight = calculateConnectionWeight(cellj, celli);
+//  Connection newConnection = new Connection(j, cellj, i, celli, connectionWeight, false);
+
+//  cellj.downhillConnections.add(newConnection);
+//  celli.uphillConnections.add(newConnection);
+//  //
+//}

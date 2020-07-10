@@ -2,11 +2,19 @@ class Connection {
 
   float checksum = random(0, 1000); // even if this is only to 2 decimal places it has a 1/100000 chance of a repeat
 
+  float x1;
+  float y1;
+  float x2;
+  float y2;
+  float connectionWeight;
+
+  Cell cell1;
+  Cell cell2;
+
   float xFrom;
   float yFrom;
   float xTo;
   float yTo;
-  float connectionWeight;
 
   Cell cellFrom; // use this to figure out if a swap happened
   Cell cellTo;
@@ -17,103 +25,95 @@ class Connection {
   boolean hasUncheckedNeuronalConnection = false;
   boolean connectionIsComplete = false;
 
-  Connection(int tempCellFromIndex, Cell tempCellFrom, int tempCellToIndex, Cell tempCellTo, float tempConnectionWeight, boolean tempHasUncheckedNeuronalConnection) {
-    cellFrom = tempCellFrom;
-    cellTo = tempCellTo;
+  Connection(int tempCellFromIndex, int tempCellToIndex, Cell tempCell1, Cell tempCell2) {
 
     cellFromIndex = tempCellFromIndex;
     cellToIndex = tempCellToIndex;
 
-    xFrom = cellFrom.xPos;
-    yFrom = cellFrom.yPos;
-    xTo = cellTo.xPos;
-    yTo = cellTo.yPos;
+    cell1 = tempCell1;
+    cell2 = tempCell2;
 
-    connectionWeight = tempConnectionWeight;
-
-    hasUncheckedNeuronalConnection = tempHasUncheckedNeuronalConnection;
-    connectionIsComplete = !tempHasUncheckedNeuronalConnection;
+    x1 = cell1.xPos;
+    y1 = cell1.yPos;
+    x2 = cell2.xPos;
+    y2 = cell2.yPos;
   }
 
-  void fixNeuronalConnectionDirection() { 
-    if (hasUncheckedNeuronalConnection) {
-      if (cellFrom.isSensor() || cellTo.isMotor()) { // if sensors are giving data to a neuron or a neuron is giving data to a motor, the connection is correct
-        int neurolinks = cellTo.neuronalConnections.size();
-        for (int i = neurolinks - 1; i >= 0; i--) {
-          //if (i < cellTo.neuronalConnections.size()) {
-            if (checksum == cellTo.neuronalConnections.get(i).checksum) {
-              cellTo.uphillConnections.add(cellTo.neuronalConnections.get(i));
-              cellTo.neuronalConnections.remove(i);
-              break;
-            }
-          //}
-        }
-        neurolinks = cellFrom.neuronalConnections.size();
-        for (int i = neurolinks - 1; i >= 0; i--) {
-          //if (i < cellFrom.neuronalConnections.size()) {
-            if (checksum == cellFrom.neuronalConnections.get(i).checksum) {
-              cellFrom.downhillConnections.add(cellFrom.neuronalConnections.get(i));
-              cellFrom.neuronalConnections.remove(i);
-              break;
-            }
-          //}
-        }
-        hasUncheckedNeuronalConnection = false;
-        return;
-      } else if (cellTo.isSensor() || //  if a sensor is receiving data or...
-        ((cellTo.isNeuron() && cellFrom.isNeuron()) && (cellFrom.diameter < cellTo.diameter))) { // ... a small neuron is giving data to a large neuron, the connection is incorrect
-        swapConnectionToFrom();
-        int neurolinks = cellTo.neuronalConnections.size();
-        for (int i = neurolinks - 1; i >= 0; i--) {
-          //if (i < cellTo.neuronalConnections.size()) {
-            if (checksum == cellTo.neuronalConnections.get(i).checksum) {
-              cellTo.uphillConnections.add(cellTo.neuronalConnections.get(i));
-              cellTo.neuronalConnections.remove(i);
-              break;
-            }
-          //}
-        }
-        neurolinks = cellFrom.neuronalConnections.size();
-        for (int i = neurolinks - 1; i >= 0; i--) {
-          //if (i < cellFrom.neuronalConnections.size()) {
-            if (checksum == cellFrom.neuronalConnections.get(i).checksum) {
-              cellFrom.downhillConnections.add(cellFrom.neuronalConnections.get(i));
-              cellFrom.neuronalConnections.remove(i);
-              break;
-            }
-          //}
-        }
-        hasUncheckedNeuronalConnection = false;
-        return;
+  //void swapConnectionToFrom() {
+  //  Cell tempCellFrom = cellFrom;
+  //  cellFrom = cellTo;
+  //  cellTo = tempCellFrom;
+  //}
+
+  void updateThisConnectionPosition() {
+
+    if (!connectionIsComplete) {
+      x1 = cell1.xPos;
+      y1 = cell1.yPos;
+      x2 = cell2.xPos;
+      y2 = cell2.yPos;
+      if ((cell1.doneGrowing == true && cell1.doneMoving == true) && // if both cells...
+        (cell2.doneGrowing == true && cell2.doneMoving == true)) { // ...are done moving/growing
+        setCellToAndCellFrom();
+        connectionWeight = calculateConnectionWeight(cellFrom, cellTo);
+        connectionIsComplete = true;
       }
     }
   }
 
-
-  void swapConnectionToFrom() {
-    Cell tempCellFrom = cellFrom;
-    cellFrom = cellTo;
-    cellTo = tempCellFrom;
-  }
-
-  void updateThisConnectionPosition() {
-    xFrom = cellFrom.xPos;
-    yFrom = cellFrom.yPos;
-    xTo = cellTo.xPos;
-    yTo = cellTo.yPos;
-    if (!connectionIsComplete) {
-      if ((!(cellFrom.isNeuron()) || (cellFrom.doneGrowing == true && cellFrom.doneMoving == true)) && 
-        (!(cellTo.isNeuron()) || (cellTo.doneGrowing == true && cellTo.doneMoving == true))) { // if both cells either are not a neuron, or are and are done moving/growing
-        connectionWeight = calculateConnectionWeight(cellFrom, cellTo);
-        fixNeuronalConnectionDirection(); 
-        connectionIsComplete = true;
+  void setCellToAndCellFrom() {
+    if (cell1.isSensor()) {
+      cellTo = cell2;
+      cellFrom = cell1;
+      xTo = cellTo.xPos;
+      yTo = cellTo.yPos;
+      xFrom = cellFrom.xPos;
+      yFrom = cellFrom.yPos;
+    } else if (cell1.isMotor()) {
+      cellTo = cell1;
+      cellFrom = cell2;
+      xTo = cellTo.xPos;
+      yTo = cellTo.yPos;
+      xFrom = cellFrom.xPos;
+      yFrom = cellFrom.yPos;
+    } else if (cell1.isNeuron()) { 
+      if (cell2.isSensor()) {
+        cellTo = cell1;
+        cellFrom = cell2;
+        xTo = cellTo.xPos;
+        yTo = cellTo.yPos;
+        xFrom = cellFrom.xPos;
+        yFrom = cellFrom.yPos;
+      } else if (cell2.isMotor()) {
+        cellTo = cell2;
+        cellFrom = cell1;
+        xTo = cellTo.xPos;
+        yTo = cellTo.yPos;
+        xFrom = cellFrom.xPos;
+        yFrom = cellFrom.yPos;
+      } else if (cell2.isNeuron()) { 
+        if (cell1.diameter > cell2.diameter) {
+          cellTo = cell2;
+          cellFrom = cell1;
+          xTo = cellTo.xPos;
+          yTo = cellTo.yPos;
+          xFrom = cellFrom.xPos;
+          yFrom = cellFrom.yPos;
+        } else if(cell1.diameter <= cell2.diameter) {
+          cellTo = cell1;
+          cellFrom = cell2;
+          xTo = cellTo.xPos;
+          yTo = cellTo.yPos;
+          xFrom = cellFrom.xPos;
+          yFrom = cellFrom.yPos;
+        }
       }
     }
   }
 
   void drawThisConnection() {
     if (connectionIsComplete) {
-      float[] weightPosition = getTextLabelPosition(xTo, yTo, xFrom, yFrom);
+      float[] weightPosition = getTextLabelPosition(xFrom, yFrom, xTo, yTo);
       stroke(0);
       fill(0);
 
@@ -121,15 +121,13 @@ class Connection {
       text(connectionWeight, weightPosition[0], weightPosition[1]);
       arrow(int(xFrom), int(yFrom), int(xTo), int(yTo));
     } else {
-      float[] weightPosition = getTextLabelPosition(xTo, yTo, xFrom, yFrom);
+      float[] weightPosition = getTextLabelPosition(x2, y2, x1, y1);
       stroke(0);
       fill(0);
 
       strokeWeight(1);
       text("Calculating...", weightPosition[0], weightPosition[1]);
-      line(xFrom, yFrom, xTo, yTo);
+      line(x1, y1, x2, y2);
     }
   }
-
-  //void verifyAndCorrectConnectionDirection
 }

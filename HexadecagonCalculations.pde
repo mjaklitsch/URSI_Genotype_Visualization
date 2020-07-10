@@ -1,6 +1,7 @@
-int hexadecagonRadius = 300;
-float hexadecagonalTriangleInnerAngle = 22.5;
-float hexadecagonalTriangleOuterAngle = 78.75; //see below
+final int polygonRadius = 300;
+
+final float polygonalTriangleInnerTheta = (2*PI) / numberOfSensors;
+final float polygonalTriangleOuterTheta = (PI - polygonalTriangleInnerTheta) / 2; //see below
 //   center (Inner Angle)
 //     /\
 //    /  \
@@ -8,13 +9,20 @@ float hexadecagonalTriangleOuterAngle = 78.75; //see below
 //  /______\
 //  ^ these ^ angles (Outer Angles)
 
-
-float polarX(float angle) { // takes angle(polar coordinate) and returns the corresponding cartesian X coordinate for the global hexadecagon size
-  return cos(radians(angle))*hexadecagonRadius;
+float polarXAngle(float angle) { // takes theta(polar coordinate) and returns the corresponding cartesian X coordinate for the global polygon size
+  return cos(radians(angle))*polygonRadius;
 }
 
-float polarY(float angle) { // takes angle(polar coordinate) and returns the corresponding cartesian Y coordinate for the global hexadecagon size
-  return sin(radians(angle))*hexadecagonRadius;
+float polarYAngle(float angle) { // takes theta(polar coordinate) and returns the corresponding cartesian Y coordinate for the global polygon size
+  return sin(radians(angle))*polygonRadius;
+}
+
+float polarXTheta(float theta) { // takes theta(polar coordinate) and returns the corresponding cartesian X coordinate for the global polygon size
+  return cos(theta)*polygonRadius;
+}
+
+float polarYTheta(float theta) { // takes theta(polar coordinate) and returns the corresponding cartesian Y coordinate for the global polygon size
+  return sin(theta)*polygonRadius;
 }
 
 float distanceBetween(float xPos1, float yPos1, float xPos2, float yPos2) {
@@ -22,59 +30,81 @@ float distanceBetween(float xPos1, float yPos1, float xPos2, float yPos2) {
   return distance;
 }
 
-float getHexDistanceFromOriginAtAngle(float angle) {
+float getPolygonDistanceFromOriginAtTheta(float theta) {
 
-  float scaledAngle = angle % hexadecagonalTriangleInnerAngle; // reduce problem to single triangle
-  float edgeAngle =  180 - (scaledAngle + hexadecagonalTriangleOuterAngle); // get angle produced by cell's angle of incident on hexadecagon's outer edge
-  float hexSize = (hexadecagonRadius * sin(radians(hexadecagonalTriangleOuterAngle))) / (sin(radians(edgeAngle))); // law of sines to get length from center to edge of hexadecagon at that angle
-  return hexSize;
+  float scaledTheta = theta % polygonalTriangleInnerTheta; // reduce problem to single triangle
+  float edgeTheta = PI - (scaledTheta + polygonalTriangleOuterTheta); // get angle produced by cell's angle of incident on polygon's outer edge
+  float polygonDistanceFromOrigin = (polygonRadius * sin(polygonalTriangleOuterTheta)) / (sin(edgeTheta)); // law of sines to get length from center to edge of polygon at that angle
+  return polygonDistanceFromOrigin;
 }
 
-int getIndexOfClosestSensorDotToAngle(float angle) {
-  int inverseIndex = round(angle / hexadecagonalTriangleInnerAngle);// the sensors are indexed incrementally clockwise whereas...
+int getIndexOfClosestSensorDotToTheta(float theta) {
+  int inverseIndex = round(theta / polygonalTriangleInnerTheta);// the sensors are indexed incrementally clockwise whereas...
   if (inverseIndex == 0) { // ...angles increase counterclockwise (in an attempt to mimick the unit circle)...
-    return 0; 
+    return 0;
   } else {
-    return 16 - inverseIndex; // ...which makes this inverse measurement necessary
+    return numberOfSensors - inverseIndex; // ...which makes this inverse measurement necessary
   }
 }
 
-boolean isCellOverlappingWithHexadecagon(Cell cell) {
+//boolean isCellOverlappingWithPolygon(Cell cell) {
 
-  float centerOfCircleDistanceFromOrigin = distanceBetween(cell.xPos, cell.yPos, 0, 0);
-  float edgeOfCircleDistanceFromOrigin = centerOfCircleDistanceFromOrigin + cell.radius;
-  float hexDistanceFromOrigin = getHexDistanceFromOriginAtAngle(degrees(cell.genotype.theta));
+//  float centerOfCircleDistanceFromOrigin = distanceBetween(cell.xPos, cell.yPos, 0, 0);
+//  float edgeOfCircleDistanceFromOrigin = centerOfCircleDistanceFromOrigin + cell.radius;
+//  float polygonDistanceFromOrigin = getPolygonDistanceFromOriginAtAngle(degrees(cell.genotype.theta));
 
-  //print("hex distance: " + hexDistanceFromOrigin);
-  //println();
-  //print("circle distance: " + edgeOfCircleDistanceFromOrigin);
-  //println();
-  //println();
-  if (edgeOfCircleDistanceFromOrigin > hexDistanceFromOrigin) {
+//  if (edgeOfCircleDistanceFromOrigin >= polygonDistanceFromOrigin) {
+//    return true;
+//  } else {
+//    return false;
+//  }
+//}
+float getxCoordinateOfPolygonAtTheta(float theta) {
+  float xCoordOfPolygon = getPolygonDistanceFromOriginAtTheta(theta) * cos(theta);
+  return xCoordOfPolygon;
+}
+
+float getyCoordinateOfPolygonAtTheta(float theta) {
+  float yCoordOfPolygon = -getPolygonDistanceFromOriginAtTheta(theta) * sin(theta);
+  return yCoordOfPolygon;
+}
+
+boolean isCellOverlappingWithPolygon(Cell cell) {
+  float theta = cell.genotype.theta;
+  float xCoordOfPolygonAtTheta = getxCoordinateOfPolygonAtTheta(theta);
+  float yCoordOfPolygonAtTheta = getyCoordinateOfPolygonAtTheta(theta);
+  float thetaOfCircleTangentWithPolygon = abs((theta % polygonalTriangleInnerTheta)-(polygonalTriangleInnerTheta/2));
+
+  float cosThetaOfTangent = cos(thetaOfCircleTangentWithPolygon);
+
+  float distanceFromTargetPointOfPolygonToCenterOfCell = distanceBetween(cell.xPos, cell.yPos, xCoordOfPolygonAtTheta, yCoordOfPolygonAtTheta);
+  float distanceFromClosestPointOfPolygonToCenterOfCell = distanceFromTargetPointOfPolygonToCenterOfCell * cosThetaOfTangent;
+
+  if (distanceFromClosestPointOfPolygonToCenterOfCell <= cell.radius) {
     return true;
   } else {
     return false;
   }
 }
 
-float[] getMidpoint(float x1, float y1, float x2, float y2){
+float[] getMidpoint(float x1, float y1, float x2, float y2) {
   float[] midpoint = new float[2];
-  
+
   float x3 = (x1 + x2) / 2;
   float y3 = (y1 + y2) / 2;
-  
+
   midpoint[0] = x3;
   midpoint[1] = y3;
-  
+
   return midpoint;
 }
 
-float[] getTextLabelPosition(float x1, float y1, float x2, float y2){
+float[] getTextLabelPosition(float x1, float y1, float x2, float y2) {
   float[] textLabelPosition = getMidpoint(x1, y1, x2, y2);
-  
+
   textLabelPosition[0] += 0; // shift position right
   textLabelPosition[1] -= 10; // shift position up
-  
+
   return textLabelPosition;
 }
 

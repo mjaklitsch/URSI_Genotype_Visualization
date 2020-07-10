@@ -1,9 +1,8 @@
-int ticks = 180;
-int ticksPerSecond = 6;
-int frames = 60;
-int currentTick = 0;
-int simTime = ticks / ticksPerSecond; // time in seconds
-int actionSpread = frames / ticksPerSecond; 
+final int ticks = 180;
+final int ticksPerSecond = 6;
+final int frames = 60;
+final int simTime = ticks / ticksPerSecond; // time in seconds
+final int actionSpread = frames / ticksPerSecond;
 
 // Processing runs at a designated framerate, we can change that framerate using the framerate() function. 
 // By setting the "frames" variable to 60 we know that we have (at most) 60 frames per second and thus a standard for building a timer.
@@ -16,30 +15,31 @@ int actionSpread = frames / ticksPerSecond;
 // so increasing simulation time as well as the time spread of the items being simulated is as simple as adjusting the "ticks" variable
 
 //int totalCells = 8;
+final int numberOfSensors = 8; // below 8 accuracy decreases for unknown reasons
 
 // Phenotype Generation Variables
-int minNeurons = 10;
-int minPhotosensors = 2;
-int minIRSensors = 2;
-int minLeftMotors = 2;
-int minRightMotors = 2;
+final int minNeurons = 2;
+final int minPhotosensors = 2;
+final int minIRSensors = 2;
+final int minLeftMotors = 1;
+final int minRightMotors = 1;
 
-int maxNeurons = 10;
-int maxPhotosensors = 6;
-int maxIRSensors = 6;
-int maxLeftMotors = 3;
-int maxRightMotors = 3;
+final int maxNeurons = 4;
+final int maxPhotosensors = 4;
+final int maxIRSensors = 4;
+final int maxLeftMotors = 1;
+final int maxRightMotors = 1;
 
 // Genotype Generation Variables
-int minDuration = 20;
-int maxDuration = 40;
-int minDelay = 0;
-//int maxDelay = 0; // for testing
-int maxDelay = ticks - maxDuration;
-int minSpeed = 4;
-int maxSpeed = 12;
-int minGrowthRate = 3;
-int maxGrowthRate = 7;
+final int minDuration = 20;
+final int maxDuration = 40;
+final int minDelay = 0;
+//final int maxDelay = 0; // for testing
+final int maxDelay = ticks - maxDuration;
+final int minSpeed = 4;
+final int maxSpeed = 12;
+final int minGrowthRate = 3;
+final int maxGrowthRate = 7;
 
 Phenotype testPhenotype;
 SensorArray testSensorArray;
@@ -62,7 +62,11 @@ void setup() {
 }
 
 int timer = 0;
+int currentTick = 0;
 int timerOverlap = actionSpread;
+
+//float testTheta = 0;
+//float testIncrement = .01;
 
 void draw() {
 
@@ -90,7 +94,11 @@ void draw() {
   pushMatrix();
 
   translate(width/2, height/2);
-  testPhenotype.drawPhenotype();
+  //line(0,0,getxCoordinateOfPolygonAtTheta(testTheta), getyCoordinateOfPolygonAtTheta(testTheta));
+
+  //testTheta += testIncrement;
+  
+  testPhenotype.drawPhenotype(); // draws circles
   testPhenotype.recordIntersections();
   testPhenotype.drawConnections();
   testSensorArray.drawSensors();
