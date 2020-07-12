@@ -1,5 +1,5 @@
 class Cell {
-  float checksum = random(0, 1000);
+  int index;
 
   //ArrayList<Connection> downhillConnections = new ArrayList<Connection>(); // info flows from this cell to these cells
   //ArrayList<Connection> uphillConnections = new ArrayList<Connection>(); // info flows from these cells to this cell
@@ -20,8 +20,9 @@ class Cell {
   boolean doneMoving = false;
   boolean doneGrowing = false;
 
-  Cell(String cellType) {
+  Cell(String cellType, int tempIndex) {
     genotype = returnRandomNewGenotype(cellType);
+    index = tempIndex;
   }
 
   boolean isMotor() {
@@ -48,11 +49,23 @@ class Cell {
     }
   }
 
+  boolean hasSpecificDirectionalConnection(int cellFromIndex, int cellToIndex) {
+    int links = cellConnections.size();
+    for (int i = 0; i < links; i++) {
+      if (cellConnections.get(i).isConnectionFromFirstToSecond(cellFromIndex, cellToIndex)) {
+        //then there is a connection and we return true
+        return true;
+      }
+    }
+    // else return false as no connection exists yet
+    return false;
+  }
+
   boolean hasConnection(int cell1Index, int cell2Index) {
     int links = cellConnections.size();
     for (int i = 0; i < links; i++) {
-      if ((cellConnections.get(i).cellFromIndex == cell1Index && cellConnections.get(i).cellToIndex == cell2Index) || // if from cell1 to cell2
-        (cellConnections.get(i).cellFromIndex == cell2Index && cellConnections.get(i).cellToIndex == cell1Index)) {// or if from cell2 to cell1
+      if ((cellConnections.get(i).isConnectionFromFirstToSecond(cell1Index, cell2Index)) || // if from cell1 to cell2
+        (cellConnections.get(i).isConnectionFromFirstToSecond(cell2Index, cell1Index))) {// or if from cell2 to cell1
         //then there is a connection and we return true
         return true;
       }
@@ -60,6 +73,17 @@ class Cell {
     }
     // else return false as no connection exists yet
     return false;
+  }
+
+  float getSpecificDirectionalConnectionWeight(int cellFromIndex, int cellToIndex) {
+    int links = cellConnections.size();
+    for (int i = 0; i < links; i++) {
+      if (cellConnections.get(i).isConnectionFromFirstToSecond(cellFromIndex, cellToIndex)) {
+        return cellConnections.get(i).connectionWeight;
+      }
+    }
+    print("This should never print");
+    return 0;
   }
 
   void updateAllConnectionPositions() {
@@ -125,7 +149,16 @@ class Cell {
       fill(#4dff00, opacity);
       break;
     }
+
     ellipse(xPos, yPos, diameter, diameter);
+    fill(0);
+    if (diameter > 0 && showIndexes == true) {
+      text(index, xPos, yPos);
+    }
+  }
+
+  void printGenes() {
+    printGenotype(genotype);
   }
 
   //==================================

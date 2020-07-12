@@ -15,7 +15,7 @@ final int actionSpread = frames / ticksPerSecond;
 // so increasing simulation time as well as the time spread of the items being simulated is as simple as adjusting the "ticks" variable
 
 //int totalCells = 8;
-final int numberOfSensors = 8; // below 8 accuracy decreases for unknown reasons
+final int numberOfSensors = 8; // 30 is the max for unknown reasons
 
 // Phenotype Generation Variables
 final int minNeurons = 2;
@@ -40,6 +40,8 @@ final int minSpeed = 4;
 final int maxSpeed = 12;
 final int minGrowthRate = 3;
 final int maxGrowthRate = 7;
+
+boolean showIndexes = true;
 
 Phenotype testPhenotype;
 SensorArray testSensorArray;
@@ -70,6 +72,8 @@ int timerOverlap = actionSpread;
 
 void draw() {
 
+
+
   if (currentTick < ticks) {
     if (timer < timerOverlap) {
       timer++;
@@ -79,15 +83,16 @@ void draw() {
       //print(currentTick);
       //println();
     }
-  } else if (timerOverlap > 0){
+  } else if (timerOverlap > 0) {
     println("***Simulation Complete***");
     println();
-    //Robot finalRobot = new Robot(testSensorArray, testPhenotype);
-    //finalRobot.printRobot();
+    Robot finalRobot = new Robot(testSensorArray, testPhenotype);
+    finalRobot.printRobot();
     timerOverlap = -1;
   } 
 
   background(255);
+  text("Press 'r' to rebuild, press 'i' to show or hide cell indexes", 50, 50);
   fill(0);
   //line(0, height/2, width, height/2);
   //line(width/2, 0, width/2, height);
@@ -97,13 +102,14 @@ void draw() {
   //line(0,0,getxCoordinateOfPolygonAtTheta(testTheta), getyCoordinateOfPolygonAtTheta(testTheta));
 
   //testTheta += testIncrement;
-  
+
   testPhenotype.drawPhenotype(); // draws circles
   testPhenotype.recordIntersections();
   testPhenotype.drawConnections();
   testSensorArray.drawSensors();
   testSensorArray.recordIntersections(testPhenotype);
   testSensorArray.drawIntersections(testPhenotype);
+
 
   popMatrix();
 }
@@ -121,5 +127,9 @@ void keyPressed() {
     translate(width/2, height/2);
     testSensorArray.initializeSensors(5);
     popMatrix();
+    break;
+  case 'i':
+    showIndexes = !showIndexes;
+    break;
   }
 }

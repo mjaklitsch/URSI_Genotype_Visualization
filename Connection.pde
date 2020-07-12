@@ -65,6 +65,8 @@ class Connection {
     if (cell1.isSensor()) {
       cellTo = cell2;
       cellFrom = cell1;
+      cellFromIndex = cellFrom.index;
+      cellToIndex = cellTo.index;
       xTo = cellTo.xPos;
       yTo = cellTo.yPos;
       xFrom = cellFrom.xPos;
@@ -72,6 +74,8 @@ class Connection {
     } else if (cell1.isMotor()) {
       cellTo = cell1;
       cellFrom = cell2;
+      cellFromIndex = cellFrom.index;
+      cellToIndex = cellTo.index;
       xTo = cellTo.xPos;
       yTo = cellTo.yPos;
       xFrom = cellFrom.xPos;
@@ -80,6 +84,8 @@ class Connection {
       if (cell2.isSensor()) {
         cellTo = cell1;
         cellFrom = cell2;
+        cellFromIndex = cellFrom.index;
+        cellToIndex = cellTo.index;
         xTo = cellTo.xPos;
         yTo = cellTo.yPos;
         xFrom = cellFrom.xPos;
@@ -87,6 +93,8 @@ class Connection {
       } else if (cell2.isMotor()) {
         cellTo = cell2;
         cellFrom = cell1;
+        cellFromIndex = cellFrom.index;
+        cellToIndex = cellTo.index;
         xTo = cellTo.xPos;
         yTo = cellTo.yPos;
         xFrom = cellFrom.xPos;
@@ -95,19 +103,31 @@ class Connection {
         if (cell1.diameter > cell2.diameter) {
           cellTo = cell2;
           cellFrom = cell1;
+          cellFromIndex = cellFrom.index;
+          cellToIndex = cellTo.index;
           xTo = cellTo.xPos;
           yTo = cellTo.yPos;
           xFrom = cellFrom.xPos;
           yFrom = cellFrom.yPos;
-        } else if(cell1.diameter <= cell2.diameter) {
+        } else if (cell1.diameter <= cell2.diameter) {
           cellTo = cell1;
           cellFrom = cell2;
+          cellFromIndex = cellFrom.index;
+          cellToIndex = cellTo.index;
           xTo = cellTo.xPos;
           yTo = cellTo.yPos;
           xFrom = cellFrom.xPos;
           yFrom = cellFrom.yPos;
         }
       }
+    }
+  }
+
+  boolean isConnectionFromFirstToSecond(int first, int second) {
+    if (cellFromIndex == first && cellToIndex == second) {
+      return true;
+    } else {
+      return false;
     }
   }
 

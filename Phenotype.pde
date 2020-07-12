@@ -21,31 +21,31 @@ class Phenotype {
     int arrayIndex = 0;
 
     for (int i = arrayIndex; i < neurons + arrayIndex; i++) { 
-      Cell nextCell = new Cell("N");
+      Cell nextCell = new Cell("N", (i+arrayIndex));
       cellArray[i] = nextCell;
     }
     arrayIndex += neurons;
 
     for (int i = arrayIndex; i < photoSensors + arrayIndex; i++) { 
-      Cell nextCell = new Cell("P");
+      Cell nextCell = new Cell("P", (i+arrayIndex));
       cellArray[i] = nextCell;
     }
     arrayIndex += photoSensors;
 
     for (int i = arrayIndex; i < irSensors + arrayIndex; i++) { 
-      Cell nextCell = new Cell("R");
+      Cell nextCell = new Cell("R", (i+arrayIndex));
       cellArray[i] = nextCell;
     }
     arrayIndex += irSensors;
 
     for (int i = arrayIndex; i < leftMotors + arrayIndex; i++) { 
-      Cell nextCell = new Cell("LM");
+      Cell nextCell = new Cell("LM", (i+arrayIndex));
       cellArray[i] = nextCell;
     }
     arrayIndex += leftMotors;
 
     for (int i = arrayIndex; i < rightMotors + arrayIndex; i++) { 
-      Cell nextCell = new Cell("RM");
+      Cell nextCell = new Cell("RM", (i+arrayIndex));
       cellArray[i] = nextCell;
     }
     arrayIndex += rightMotors;

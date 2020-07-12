@@ -47,7 +47,7 @@ int getIndexOfClosestSensorDotToTheta(float theta) {
   }
 }
 
-//boolean isCellOverlappingWithPolygon(Cell cell) {
+//boolean isCellOverlappingWithPolygon(Cell cell) { // deprecated because it doesnt actually work
 
 //  float centerOfCircleDistanceFromOrigin = distanceBetween(cell.xPos, cell.yPos, 0, 0);
 //  float edgeOfCircleDistanceFromOrigin = centerOfCircleDistanceFromOrigin + cell.radius;

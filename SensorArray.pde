@@ -38,10 +38,10 @@ class SensorArray {
       }
     }
   }
-  
+
   final float polygonalTriangleInnerAngle = 360 / numberOfSensors;
   final float polygonalTriangleOuterAngle = (180 - polygonalTriangleInnerAngle) / 2; // only used for sensors
-  
+
   void drawSensors() {
     float lastX = 0;
     float lastY = 0;
@@ -80,7 +80,8 @@ class SensorArray {
 
       int sensorArrayIndex = int(i/polygonalTriangleInnerAngle);
       fill(0);
-      text(sensorArrayIndex, x, y);
+      float[] labelPosition = getTextLabelPosition(x, y, x, y);
+      text(sensorArrayIndex, labelPosition[0], labelPosition[1]);
       sensorDotArray[sensorArrayIndex] = new SensorDot(x, y, dotSize);
       sensorDotArray[sensorArrayIndex].drawSensorDot();
 
