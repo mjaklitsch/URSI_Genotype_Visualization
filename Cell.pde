@@ -19,7 +19,11 @@ class Cell {
 
   boolean doneMoving = false;
   boolean doneGrowing = false;
-
+  Cell(Genotype G, int tempIndex){
+    index = tempIndex;
+    genotype = G;
+  }
+  
   Cell(String cellType, int tempIndex) {
     genotype = returnRandomNewGenotype(cellType);
     index = tempIndex;

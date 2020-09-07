@@ -34,8 +34,8 @@ final int maxRightMotors = 1;
 final int minDuration = 20;
 final int maxDuration = 40;
 final int minDelay = 0;
-//final int maxDelay = 0; // for testing
-final int maxDelay = ticks - maxDuration;
+final int maxDelay = 0; // for testing
+//final int maxDelay = ticks - maxDuration;
 final int minSpeed = 4;
 final int maxSpeed = 12;
 final int minGrowthRate = 3;
@@ -53,14 +53,43 @@ void setup() {
   testPhenotype = new Phenotype(minNeurons, maxNeurons, minPhotosensors, maxPhotosensors, 
     minIRSensors, maxIRSensors, minLeftMotors, maxLeftMotors, minRightMotors, maxRightMotors);
   testSensorArray = new SensorArray();
+  
+    Cell[] newCellArray = new Cell[8];
+    Genotype G0 = new Genotype("N", 0.960873, -1.000000, 4.000000, 32.000000, 5.000000, 0.000000, 27.000000);
+    Cell C0 = new Cell(G0, 0);
+    newCellArray[0] = C0;
+    Genotype G1 = new Genotype("P", 3.522930, 4.000000, 6.000000, 28.000000, 8.000000, 0.000000, 39.000000);
+    Cell C1 = new Cell(G1, 1);
+    newCellArray[1] = C1;
+    Genotype G2 = new Genotype("P", 1.246024, 3.000000, 5.000000, 33.000000, 5.000000, 0.000000, 30.000000);
+    Cell C2 = new Cell(G2, 2);
+    newCellArray[2] = C2;
+    Genotype G3 = new Genotype("P", 5.344616, -3.000000, 3.000000, 36.000000, 10.000000, 0.000000, 25.000000);
+    Cell C3 = new Cell(G3, 3);
+    newCellArray[3] = C3;
+    Genotype G4 = new Genotype("R", 4.476335, 2.000000, 5.000000, 37.000000, 7.000000, 0.000000, 22.000000);
+    Cell C4 = new Cell(G4, 4);
+    newCellArray[4] = C4;
+    Genotype G5 = new Genotype("R", 6.245012, -1.000000, 3.000000, 39.000000, 5.000000, 0.000000, 38.000000);
+    Cell C5 = new Cell(G5, 5);
+    newCellArray[5] = C5;
+    Genotype G6 = new Genotype("LM", 2.140894, -5.000000, 3.000000, 27.000000, 4.000000, 0.000000, 33.000000);
+    Cell C6 = new Cell(G6, 6);
+    newCellArray[6] = C6;
+    Genotype G7 = new Genotype("RM", 0.013736, -2.000000, 3.000000, 22.000000, 11.000000, 0.000000, 26.000000);
+    Cell C7 = new Cell(G7, 7);
+    newCellArray[7] = C7;
+
+    testPhenotype.cellArray = newCellArray;
+    testPhenotype.numberOfCells = 8;
 
   line(0, height/2, width, height/2);
   line(width/2, 0, width/2, height);
-  pushMatrix();
+  //pushMatrix();
 
-  translate(width/2, height/2);
+  //translate(width/2, height/2);
   testSensorArray.initializeSensors(5);
-  popMatrix();
+  //popMatrix();
 }
 
 int timer = 0;
@@ -96,9 +125,9 @@ void draw() {
   fill(0);
   //line(0, height/2, width, height/2);
   //line(width/2, 0, width/2, height);
-  pushMatrix();
+  //pushMatrix();
 
-  translate(width/2, height/2);
+  //translate(width/2, height/2);
   //line(0,0,getxCoordinateOfPolygonAtTheta(testTheta), getyCoordinateOfPolygonAtTheta(testTheta));
 
   //testTheta += testIncrement;
@@ -111,7 +140,7 @@ void draw() {
   testSensorArray.drawIntersections(testPhenotype);
 
 
-  popMatrix();
+  //popMatrix();
 }
 
 void keyPressed() {
